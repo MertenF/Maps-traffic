@@ -1,0 +1,26 @@
+#Config file maps traffic
+#Bij config errors bestand checken op http://www.yamllint.com/
+
+#time format: yyyy-mm-dd hh:mm
+locations:
+  example_brussel:
+    latitude: 50.8540222
+    longitude: 4.3418257
+    zoom: 14.5
+    time:
+      - now
+  example2_random:
+    latitude: 50
+    longitude: 4
+    zoom: 12
+    time:
+      - 2020-10-08 20:00
+      - now
+
+
+#Toon het browserscherm
+visual: no
+
+#Groote van de screenshot, in pixels
+window_x: 1024
+window_y: 768
