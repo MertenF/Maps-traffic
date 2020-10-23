@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 import yaml
+
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.options import Options
