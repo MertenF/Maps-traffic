@@ -19,7 +19,7 @@ locations:
 
 
 #Toon het browserscherm
-visual: no
+visual: yes
 
 #Groote van de screenshot, in pixels
 window_x: 1024
