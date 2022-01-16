@@ -67,8 +67,8 @@ def main():
             print('[INFO]: Alle taken gepland. Dit venster open laten tot alle taken voltooid zijn aub.')
             plan.run()
 
-        print('[INFO]: Geen resterende taken meer, afsluiten')
-        input('Druk op enter om dit venster te sluiten...')
+    print('[INFO]: Geen resterende taken meer, afsluiten')
+    input('Druk op enter om dit venster te sluiten...')
 
 
 if __name__ == '__main__':
