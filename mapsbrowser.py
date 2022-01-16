@@ -3,7 +3,6 @@ import pathlib
 import sys
 import os
 
-
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
@@ -44,8 +43,10 @@ class ScreenshotBrowser:
         print('[INFO]: Saving screenshot to', str(image_path))
         self.driver.save_screenshot(str(image_path))
 
-    def quit(self) -> None:
-        """Quits the browser, closing it gracefully and preventing it from hogging up memory"""
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self.driver.quit()
 
 
