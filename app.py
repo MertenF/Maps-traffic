@@ -5,16 +5,16 @@ import shutil
 
 from flask import Flask, render_template, request
 
-socket_location = './uds_socket'
+socket_location = '/tmp/uds_socket'
 app = Flask(__name__)
 
 
 @app.route("/")
 def index():
     total, used, free = shutil.disk_usage('/')
-    disk_used = used / (10 ** 9)
-    disk_total = total / (10**9)
-    return render_template('index.html', disk_used=disk_used, disk_total=disk_total)
+    disk_used = '{:.2f}'.format(used / (10 ** 9))
+    disk_total = '{:.2f}'.format(total / (10 ** 9))
+    return render_template('index.html', pct=int(used/total*100), disk_used=disk_used, disk_total=disk_total)
 
 
 @app.route('/submit', methods=['POST', 'GET'])
@@ -61,7 +61,7 @@ def submit():
             info_text='Probleem bij het verbinden met de taak-server',
             error=repr(e))
 
-    return render_template('submit.html')
+    return render_template('submit.html', data_dict=data_dict)
 
 
 def send_data(data):

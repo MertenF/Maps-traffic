@@ -1,6 +1,17 @@
 {% extends 'template.html' %}
 
 {% block content %}
-    <p>Toegevoegd!</p>
+    <h1>Taak is toegevoegd!</h1>
+	<div>
+		Samenvatting:
+		{% for key, value in data_dict.items() %}
+			<div>{{ key }} = {{ value }}</div>
+		{% endfor %}
+	</div>
+	</br>
+	<div>
+		<a class="btn btn-secondary" href="/">Nieuwe taak ingeven</a>
+	</div>
+	
 
 {% endblock %}

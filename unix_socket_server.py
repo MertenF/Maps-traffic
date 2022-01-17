@@ -9,7 +9,7 @@ from pathlib import Path
 import maps_traffic
 import screenshotscheduler
 
-socket_location = './uds_socket'
+socket_location = '/tmp/uds_socket'
 
 scheduler = screenshotscheduler.ScreenshotScheduler(maps_traffic.get_screenshots_now)
 

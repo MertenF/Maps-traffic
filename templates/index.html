@@ -19,7 +19,7 @@
             </div>
         </div>
         <div>
-            <label for="zoom" class="form-label">Zoomniveau</label>
+            <label for="zoom" class="form-label">Zoomniveau:</label>
             <input name="zoom" id="zoom" type="text" inputmode="numeric" required class="form-control">
         </div>
         <div class="row g-3">
@@ -39,8 +39,10 @@
 
         <button type="submit" class="btn btn-primary">Voeg taak toe</button>
     </form>
+	</br>
+	<h3>Opslagruimte:</h3>
     <div class="progress">
-        <div class="progress-bar w-75" role="progressbar" aria-valuenow="{{ disk_used }}" aria-valuemax="{{ disk_total }}" aria-valuemin="0">{{ disk_used }}GB</div>
+        <div class="progress-bar bg-info" role="progressbar" style="width: {{ pct }}%" aria-valuenow="{{ disk_used }}" aria-valuemin="0" aria-valuemax="{{ disk_total }}">{{ disk_used }}GB/{{ disk_total }}GB</div>
     </div>
 
 {% endblock %}
