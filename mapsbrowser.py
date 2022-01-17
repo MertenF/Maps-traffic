@@ -21,12 +21,8 @@ class ScreenshotBrowser:
             {'name': 'CONSENT',
              'value': 'YES+cb.20220111+BE.nl'})
 
-    def get_maps_page(self, url: str, base_path: pathlib.Path, name: str) -> None:
-        """Gets the google maps page from url, removes clutter and saves it to base_path with name."""
-
-        now = datetime.datetime.now()
-        image_name = f'{now:%Y-%m-%d_%H%M}-{name}.png'
-        image_path = base_path.joinpath(image_name)
+    def get_maps_page(self, url: str, image_path: pathlib.Path) -> None:
+        """Gets the google maps page from url, saves it at image_path"""
 
         self.driver.get(url)
 
@@ -44,9 +40,11 @@ class ScreenshotBrowser:
         self.driver.save_screenshot(str(image_path))
 
     def __enter__(self):
+        print('[DEBUG] Entering ScreenshotBrowser class...')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        print('[DEBUG] Exiting ScreenshotBrowser class...')
         self.driver.quit()
 
 
