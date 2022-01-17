@@ -36,6 +36,6 @@ with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
 
                     if not scheduler.running():
                         print('[INFO] Scheduler was not running, starting thread')
-                        threading.Thread(target=scheduler.run()).start()
+                        threading.Thread(target=scheduler.run).start()
                 else:
                     break
