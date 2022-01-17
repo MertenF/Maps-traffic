@@ -39,6 +39,8 @@
 
         <button type="submit" class="btn btn-primary">Voeg taak toe</button>
     </form>
-
+    <div class="progress">
+        <div class="progress-bar w-75" role="progressbar" aria-valuenow="{{ disk_used }}" aria-valuemax="{{ disk_total }}" aria-valuemin="0">{{ disk_used }}GB</div>
+    </div>
 
 {% endblock %}
