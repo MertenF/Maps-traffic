@@ -1,0 +1,44 @@
+{% extends 'template.html' %}
+
+{% block content %}
+    <h1>Google maps screenshots toevoegen</h1>
+
+    <form action="/submit" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Project naam:</label>
+            <input name="name" id="name" type="text" required class="form-control">
+        </div>
+        <div class="row g-3">
+            <div class="col">
+                <label for="latitude" class="form-label">Breedtegraad (°N):</label>
+                <input name="latitude" id="latitude" type="text" inputmode="numeric" required class="form-control">
+            </div>
+            <div class="col">
+                <label for="longitude" class="form-label">Lengtegraad (°E):</label>
+                <input name="longitude" id="longitude" type="text" inputmode="numeric" required class="form-control">
+            </div>
+        </div>
+        <div>
+            <label for="zoom" class="form-label">Zoomniveau</label>
+            <input name="zoom" id="zoom" type="text" inputmode="numeric" required class="form-control">
+        </div>
+        <div class="row g-3">
+            <div  class="col">
+                <label for="start_datetime" class="form-label">Start moment:</label>
+                <input name="start_datetime" id="start_datetime" type="datetime-local" required class="form-control">
+            </div>
+            <div class="col">
+                <label for="end_datetime" class="form-label">Einde moment:</label>
+                <input name="end_datetime" id="end_datetime" type="datetime-local" required class="form-control">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="interval" class="form-label">Interval in minuten tussen screenshots:</label>
+            <input name="interval" id="interval" type="text" inputmode="numeric" required class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Voeg taak toe</button>
+    </form>
+
+
+{% endblock %}

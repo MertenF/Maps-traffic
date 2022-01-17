@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
 import datetime
-import sched
+import pathlib
 import sys
-import time
 from pathlib import Path
+from typing import Dict, List
 
 import yaml
 
 from mapsbrowser import FirefoxBrowser, ChromeBrowser
+from screenshotscheduler import ScreenshotScheduler
 
 
-def url_gen(latitude, longitude, zoom, data='!5m1!1e1'):
+def gen_url(latitude, longitude, zoom, data='!5m1!1e1'):
     url = f'https://www.google.be/maps/@{latitude},{longitude},{zoom}z/data={data}'
     return url
 
 
-def main():
-    print('Started maps traffic screenshot tool')
-    with open('config.yaml') as configuration_file:
-        config = yaml.full_load(configuration_file)
+def gen_image_path(name, screenshot_folder):
+    now = datetime.datetime.now()
+    image_name = f'{now:%Y-%m-%d_%H%M}-{name}.png'
 
+    base_path = Path(screenshot_folder, name)
+    base_path.mkdir(parents=True, exist_ok=True)
+
+    return base_path.joinpath(image_name)
+
+
+def get_screenshots_now(locations: Dict, screenshot_folder: pathlib.Path, window_x: int = 1024, window_y: int = 768) -> None:
     if sys.platform.startswith('linux'):
         Browser = ChromeBrowser
     elif sys.platform.startswith('win32'):
@@ -29,47 +36,77 @@ def main():
         print('[ERROR]: OS is not linux or windows. Other operating systems are not supported.')
         return
 
-    with Browser(config['visual']) as browser:
-        browser.setup(config['window_x'], config['window_y'])
+    with Browser(visual=False) as browser:
+        browser.setup(window_x, window_y)
+        print(f'{locations=}')
+        for name, url in locations.items():
+            image_path = gen_image_path(name, screenshot_folder)
+            browser.get_maps_page(url, image_path)
 
-        print('[INFO]: Beginnen met alle taken te plannen.')
-        plan = sched.scheduler(time.time, time.sleep)
 
-        for name in config['locations']:
-            data = config['locations'][name]
+def generate_executetimes(start_time: datetime.datetime, end_time: datetime.datetime, interval: int) -> List[datetime.datetime]:
+    execute_times = []
+    pointer = start_time
+    delta = datetime.timedelta(minutes=interval)
+    while pointer <= end_time:
+        execute_times.append(pointer)
+        pointer += delta
 
-            url = url_gen(
-                latitude=config['locations'][name]['latitude'],
-                longitude=config['locations'][name]['longitude'],
-                zoom=config['locations'][name]['zoom'])
+    return execute_times
 
-            base_path = Path(f'screenshots/{name}')
-            base_path.mkdir(parents=True, exist_ok=True)
 
-            for timeString in data['time']:
-                if timeString == 'now':
-                    print(f'[INFO]: "{name}" heeft "now" als tijdstip, screenshot wordt nu genomen.')
-                    browser.get_maps_page(url, base_path, name)
-                else:
-                    time_object = datetime.datetime.strptime(timeString, '%Y-%m-%d %H:%M')
-                    if time_object > datetime.datetime.now():
-                        plan.enterabs(
-                            time=time_object.timestamp(),
-                            priority=1,
-                            action=browser.get_maps_page,
-                            argument=(url, base_path, name),
-                        )
-                        print(f'[INFO]: "{name}" op {timeString} is toegevoegd.')
-                    else:
-                        print(f'[ERROR]: "{name}" op {timeString} valt in het verleden, overgeslagen.')
+def import_from_flask(name: str, latitude: float, longitude: float, zoom: float,
+                      start_datetime: datetime.datetime, stop_datetime: datetime.datetime,
+                      interval: int) -> [str, str, List[datetime.datetime]]:
+    url = gen_url(latitude, longitude, zoom)
+    excute_times = generate_executetimes(start_datetime, stop_datetime, interval)
 
-        if not plan.empty():
-            print('[INFO]: Alle taken gepland. Dit venster open laten tot alle taken voltooid zijn aub.')
-            plan.run()
+    return name, url, excute_times
+
+
+
+def execute_from_config():
+    print('Started maps traffic screenshot tool')
+    with open('config.yaml') as configuration_file:
+        config = yaml.full_load(configuration_file)
+
+    print('[INFO]: Beginnen met alle taken te plannen.')
+
+    planner = ScreenshotScheduler(get_screenshots_now)
+
+    for name in config['locations']:
+        data = config['locations'][name]
+
+        url = gen_url(
+            latitude=config['locations'][name]['latitude'],
+            longitude=config['locations'][name]['longitude'],
+            zoom=config['locations'][name]['zoom'])
+
+        base_path = Path('screenshots')
+
+        for time_string in data['time']:
+            if time_string == 'now':
+                get_screenshots_now({name: url}, base_path)
+            else:
+                try:
+                    time_object = datetime.datetime.strptime(time_string, '%Y-%m-%d %H:%M')
+                except ValueError:
+                    print(f'[ERROR] Geen geldig moment ingegeven! {time_string = }')
+                    continue
+                planner.add_exact_task(name, url, time_object, base_path)
 
     print('[INFO]: Geen resterende taken meer, afsluiten')
     input('Druk op enter om dit venster te sluiten...')
 
 
 if __name__ == '__main__':
-    main()
+    # execute_from_config()
+    import_from_flask(
+        name="Test",
+        latitude=50.357,
+        longitude=4.257,
+        zoom=13.5,
+        start_datetime=datetime.datetime.now(),
+        stop_datetime=datetime.datetime.now() + datetime.timedelta(days=5),
+        interval=15
+    )

@@ -1,3 +1,4 @@
-PyYAML==5.3.1
-selenium==3.141.0
+PyYAML
+selenium
 urllib3==1.25.11
+Flask
