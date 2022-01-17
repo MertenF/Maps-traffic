@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import threading
 import socket
 import os
@@ -20,19 +22,18 @@ except OSError:
 
 with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
     print(f'[Info] Starting server up on {socket_location}')
+    sock.bind(socket_location)
     sock.listen(1)
     while True:
         # Wait for connection
         connection, client_address = sock.accept()
         with connection:
-            print(f'[INFO] Connection from {client_address}')
             while True:
                 data = connection.recv(1024)
                 if data:
-                    print(f'[DEBUG] {data = }')
                     data_dict = pickle.loads(data)
                     name, url, execute_times = maps_traffic.import_from_flask(**data_dict)
-                    scheduler.add_task_same_name(name, url, execute_times, Path(''))
+                    scheduler.add_task_same_name(name, url, execute_times, Path('/home/pi/screenshots_output'))
 
                     if not scheduler.running():
                         print('[INFO] Scheduler was not running, starting thread')
