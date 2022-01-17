@@ -56,10 +56,10 @@ def generate_executetimes(start_time: datetime.datetime, end_time: datetime.date
 
 
 def import_from_flask(name: str, latitude: float, longitude: float, zoom: float,
-                      start_datetime: datetime.datetime, stop_datetime: datetime.datetime,
+                      start_datetime: datetime.datetime, end_datetime: datetime.datetime,
                       interval: int) -> [str, str, List[datetime.datetime]]:
     url = gen_url(latitude, longitude, zoom)
-    excute_times = generate_executetimes(start_datetime, stop_datetime, interval)
+    excute_times = generate_executetimes(start_datetime, end_datetime, interval)
 
     return name, url, excute_times
 
@@ -107,6 +107,6 @@ if __name__ == '__main__':
         longitude=4.257,
         zoom=13.5,
         start_datetime=datetime.datetime.now(),
-        stop_datetime=datetime.datetime.now() + datetime.timedelta(days=5),
+        end_datetime=datetime.datetime.now() + datetime.timedelta(days=5),
         interval=15
     )
