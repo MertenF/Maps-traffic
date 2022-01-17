@@ -1,4 +1,4 @@
 PyYAML
 selenium
-urllib3==1.25.11
+urllib3
 Flask
