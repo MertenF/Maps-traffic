@@ -5,7 +5,9 @@ import shutil
 
 from flask import Flask, render_template, request
 
-socket_location = '/tmp/uds_socket'
+SOCKET_LOCATION = '/tmp/uds_socket'
+
+
 app = Flask(__name__)
 
 
@@ -66,11 +68,7 @@ def submit():
 
 def send_data(data):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
-        s.connect(socket_location)
-        print(f'[INFO] Verbonden met socket op {socket_location}')
+        s.connect(SOCKET_LOCATION)
+        print(f'[INFO] Verbonden met socket op {SOCKET_LOCATION}')
         s.sendall(data)
         print('Data verzonden')
-
-
-if __name__ == '__main__':
-    app.run()
