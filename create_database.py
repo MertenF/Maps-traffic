@@ -17,5 +17,4 @@ with closing(sqlite3.connect(DATABASE)) as conn:
                         interval INT,
                         start_datetime DATETIME,
                         end_datetime DATETIME)""")
-    conn.commtit()
-
+    conn.commit()
