@@ -2,11 +2,13 @@ import datetime
 import socket
 import pickle
 import shutil
+import sqlite3
+from contextlib import closing
 
 from flask import Flask, render_template, request
 
 SOCKET_LOCATION = '/tmp/uds_socket'
-
+DATABASE = './database.db'
 
 app = Flask(__name__)
 
@@ -16,7 +18,12 @@ def index():
     total, used, free = shutil.disk_usage('/')
     disk_used = '{:.2f}'.format(used / (10 ** 9))
     disk_total = '{:.2f}'.format(total / (10 ** 9))
-    return render_template('index.html', pct=int(used/total*100), disk_used=disk_used, disk_total=disk_total)
+
+    planned_tasks = list(load())
+
+    return render_template('index.html',
+                           pct=int(used/total*100), disk_used=disk_used, disk_total=disk_total,
+                           planned_tasks=planned_tasks)
 
 
 @app.route('/submit', methods=['POST', 'GET'])
@@ -73,3 +80,17 @@ def send_data(data):
         print(f'[INFO] Verbonden met socket op {SOCKET_LOCATION}')
         s.sendall(data)
         print('Data verzonden')
+
+
+def load():
+    """Load all the data from the database"""
+    with sqlite3.connect(DATABASE) as conn:
+        conn.row_factory = sqlite3.Row
+        with closing(conn.cursor()) as cur:
+            database_rows = [row for row in cur.execute('SELECT * from planned_tasks')]
+
+    for row in database_rows:
+        d_row = dict(row)
+        d_row['start_datetime'] = [datetime.datetime.fromisoformat(d_row['start_datetime'])]
+        d_row['end_datetime'] = [datetime.datetime.fromisoformat(d_row['end_datetime'])]
+        yield d_row
