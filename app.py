@@ -25,7 +25,7 @@ def submit():
         return index()
 
     app.logger.info(request.form)
-    fields = ('name', 'latitude', 'longitude', 'zoom', 'start_datetime', 'end_datetime', 'interval')
+    fields = ('name', 'latitude', 'longitude', 'zoom', 'start_datetime[]', 'end_datetime[]', 'interval')
     errors = []
     for field in fields:
         app.logger.info(f'{request.form[field] =} {type(request.form.get(field))}')
@@ -33,12 +33,12 @@ def submit():
             errors.append(f'{field} is niet doorgegeven!')
 
     name = request.form['name']
+    zoom = float(request.form['zoom'])
+    start_datetime = [datetime.datetime.fromisoformat(item) for item in request.form.getlist('start_datetime[]')]
+    end_datetime = [datetime.datetime.fromisoformat(item) for item in request.form.getlist('end_datetime[]')]
     try:
         lat = float(request.form['latitude'])
         long = float(request.form['longitude'])
-        zoom = float(request.form['zoom'])
-        start_datetime = datetime.datetime.fromisoformat(request.form['start_datetime'])
-        end_datetime = datetime.datetime.fromisoformat(request.form['end_datetime'])
         interval = int(request.form['interval'])
     except ValueError as e:
         return render_template(
@@ -55,6 +55,7 @@ def submit():
         'end_datetime': end_datetime,
         'interval': interval
     }
+    print(f'{data_dict=}')
     try:
         send_data(pickle.dumps(data_dict))
     except Exception as e:
