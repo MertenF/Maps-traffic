@@ -2,8 +2,8 @@ import datetime
 import socket
 import pickle
 import shutil
-import sqlite3
-from contextlib import closing
+import database
+import json
 
 from flask import Flask, render_template, request
 
@@ -13,13 +13,28 @@ DATABASE = './database.db'
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.route("/", methods=['POST', 'GET'])
 def index():
+    db = database.Database(DATABASE)
+
+    if request.method == 'POST':
+        if 'delete_row' in request.form:
+            d = json.loads(request.form['delete_row'])
+            print(d)
+            db.delete_row(d)
+            d['start_datetime'] = [datetime.datetime.fromisoformat(d['start_datetime'])]
+            d['end_datetime'] = [datetime.datetime.fromisoformat(d['end_datetime'])]
+            delete_data(d)
+        elif 'debug' in request.form:
+            ask_debug()
+
+    db.remove_old_rows()
+
     total, used, free = shutil.disk_usage('/')
     disk_used = '{:.2f}'.format(used / (10 ** 9))
     disk_total = '{:.2f}'.format(total / (10 ** 9))
 
-    planned_tasks = list(load())
+    planned_tasks = db.get_rows()
 
     return render_template('index.html',
                            pct=int(used/total*100), disk_used=disk_used, disk_total=disk_total,
@@ -64,7 +79,7 @@ def submit():
     }
     print(f'{data_dict=}')
     try:
-        send_data(pickle.dumps(data_dict))
+        add_data(data_dict)
     except Exception as e:
         return render_template(
             'error.html',
@@ -74,23 +89,18 @@ def submit():
     return render_template('submit.html', data_dict=data_dict)
 
 
-def send_data(data):
+def _send_data(data):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         s.connect(SOCKET_LOCATION)
         print(f'[INFO] Verbonden met socket op {SOCKET_LOCATION}')
         s.sendall(data)
         print('Data verzonden')
 
+def add_data(data):
+    _send_data(pickle.dumps({'CREATE': data}))
 
-def load():
-    """Load all the data from the database"""
-    with sqlite3.connect(DATABASE) as conn:
-        conn.row_factory = sqlite3.Row
-        with closing(conn.cursor()) as cur:
-            database_rows = [row for row in cur.execute('SELECT * from planned_tasks')]
+def delete_data(data):
+    _send_data(pickle.dumps({'DELETE': data}))
 
-    for row in database_rows:
-        d_row = dict(row)
-        d_row['start_datetime'] = [datetime.datetime.fromisoformat(d_row['start_datetime'])]
-        d_row['end_datetime'] = [datetime.datetime.fromisoformat(d_row['end_datetime'])]
-        yield d_row
+def ask_debug():
+    _send_data(pickle.dumps({'DEBUG': True}))

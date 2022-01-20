@@ -68,7 +68,6 @@ def import_from_flask(name: str, latitude: float, longitude: float, zoom: float,
     return name, url, list(excute_times)
 
 
-
 def execute_from_config():
     print('Started maps traffic screenshot tool')
     with open('config.yaml') as configuration_file:
@@ -87,6 +86,7 @@ def execute_from_config():
             zoom=config['locations'][name]['zoom'])
 
         base_path = Path('screenshots')
+        execute_times = []
 
         for time_string in data['time']:
             if time_string == 'now':
@@ -97,7 +97,9 @@ def execute_from_config():
                 except ValueError:
                     print(f'[ERROR] Geen geldig moment ingegeven! {time_string = }')
                     continue
-                planner.add_exact_task(name, url, time_object, base_path)
+                execute_times.append(time_object)
+
+        planner.add_tasks(name, url, execute_times, base_path)
 
     print('[INFO]: Geen resterende taken meer, afsluiten')
     input('Druk op enter om dit venster te sluiten...')

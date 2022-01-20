@@ -75,13 +75,19 @@
         <td>{{ row.longitude }}</td>
         <td>{{ row.zoom }}</td>
         <td>{{ row.interval }} min</td>
-        <td>{{ row.start_datetime[0] }}</td>
-        <td>{{ row.end_datetime[0] }}</td>
+        <td>{{ row.start_datetime[:-3] }}</td>
+        <td>{{ row.end_datetime[:-3] }}</td>
+        <td>
+            <form action="" method="post">
+                <button class="btn btn-danger" type="submit" name="delete_row" value='{{ row|tojson|safe }}'>Delete</button>
+            </form>
+        </td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
 </div>
+    <form action="" method="post"><button class="btn btn-dark" name="debug">DEBUG</button></form>
 
 <script src="{{url_for('static', filename='form.js')}}"></script>
 {% endblock %}
