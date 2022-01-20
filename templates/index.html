@@ -49,12 +49,12 @@
     </div>
 
 </form>
-</br>
+<br>
 <h3>Opslagruimte:</h3>
 <div class="progress">
     <div class="progress-bar bg-info" role="progressbar" style="width: {{ pct }}%" aria-valuenow="{{ disk_used }}" aria-valuemin="0" aria-valuemax="{{ disk_total }}">{{ disk_used }}GB/{{ disk_total }}GB</div>
 </div>
-</br>
+<br>
 <h3>Reeds geplande:</h3>
 <div>
 <table class="table table-striped table-hover">
@@ -87,7 +87,8 @@
     </tbody>
 </table>
 </div>
-    <form action="" method="post"><button class="btn btn-dark" name="debug">DEBUG</button></form>
+    <br>
+    <form action="" method="post"><button class="btn btn-light" name="debug">DEBUG</button></form>
 
 <script src="{{url_for('static', filename='form.js')}}"></script>
 {% endblock %}

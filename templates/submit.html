@@ -3,12 +3,32 @@
 {% block content %}
     <h1>Taak is toegevoegd!</h1>
 	<div>
-		Samenvatting:
-		{% for key, value in data_dict.items() %}
-			<div>{{ key }} = {{ value }}</div>
-		{% endfor %}
+		<table class="table table-striped table-hover">
+            <thead><tr>
+                <th>Naam</th>
+                <th>Breedtegraad</th>
+                <th>Lengtegraad</th>
+                <th>Zoomniveau</th>
+                <th>Interval</th>
+                <th>Start</th>
+                <th>Einde</th>
+            </tr></thead>
+            <tbody>
+            {% for start_datetime, end_datetime in datetimes %}
+                <tr>
+                <td>{{ data_dict.name }}</td>
+                <td>{{ data_dict.latitude }}</td>
+                <td>{{ data_dict.longitude }}</td>
+                <td>{{ data_dict.zoom }}</td>
+                <td>{{ data_dict.interval }} min</td>
+                <td>{{ start_datetime.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ end_datetime.strftime('%Y-%m-%d %H:%M') }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 	</div>
-	</br>
+	<br>
 	<div>
 		<a class="btn btn-secondary" href="/">Nieuwe taak ingeven</a>
 	</div>

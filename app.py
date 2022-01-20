@@ -11,6 +11,7 @@ SOCKET_LOCATION = '/tmp/uds_socket'
 DATABASE = './database.db'
 
 app = Flask(__name__)
+app.jinja_env.globals.update(zip=zip)
 
 
 @app.route("/", methods=['POST', 'GET'])
@@ -46,7 +47,6 @@ def submit():
     if request.method == 'GET':
         return index()
 
-    app.logger.info(request.form)
     fields = ('name', 'latitude', 'longitude', 'zoom', 'start_datetime[]', 'end_datetime[]', 'interval')
     errors = []
     for field in fields:
@@ -86,7 +86,8 @@ def submit():
             info_text='Probleem bij het verbinden met de taak-server',
             error=repr(e))
 
-    return render_template('submit.html', data_dict=data_dict)
+    datetimes = [(start, end) for start, end in zip(data_dict['start_datetime'], data_dict['end_datetime'])]
+    return render_template('submit.html', data_dict=data_dict, datetimes=datetimes)
 
 
 def _send_data(data):
