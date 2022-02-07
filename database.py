@@ -72,5 +72,5 @@ class Database:
     def remove_old_rows(self):
         """Remove all rows where end time is in the past"""
         with self.connection as conn:
-            conn.execute("""DELETE FROM planned_tasks WHERE end_datetime < DATETIME('NOW')""")
+            conn.execute("""DELETE FROM planned_tasks WHERE end_datetime < DATETIME('NOW', 'LOCALTIME')""")
 
