@@ -4,6 +4,7 @@ import pickle
 import shutil
 import database
 import json
+import subprocess
 
 from flask import Flask, render_template, request
 
@@ -88,6 +89,12 @@ def submit():
 
     datetimes = [(start, end) for start, end in zip(data_dict['start_datetime'], data_dict['end_datetime'])]
     return render_template('submit.html', data_dict=data_dict, datetimes=datetimes)
+
+@app.route('/shutdown', methods=['GET'])
+def shutdown():
+    p = subprocess.run(['sudo', 'shutdown', '-h', 'now'], capture_output=True)
+    print(p.stdout, p.stderr)
+    return p.stdout
 
 
 def _send_data(data):
